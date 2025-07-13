@@ -3,6 +3,7 @@ import { SelectedPage, type Task } from "../shared/types";
 import { motionProps } from "../shared/types"
 import TaskCheckbox from "../shared/TaskCheckbox";
 import { useEffect, useState } from "react";
+import NewTaskModal from "../modals/NewTaskModal";
 
 type Props = {
     setSelectedPage: (value: SelectedPage) => void;
@@ -10,6 +11,7 @@ type Props = {
 
 const Tasks = ({setSelectedPage}: Props) => {
 
+   const [showNewTaskModal, setShowNewTaskModal] = useState<boolean>(false);
    const [tasks, setTasks] = useState<Task[]>([]);
 
    useEffect(() => {
@@ -18,6 +20,7 @@ const Tasks = ({setSelectedPage}: Props) => {
       .then((data) => setTasks(data))
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
+
 
   return <section
         id="tasks"
@@ -28,17 +31,26 @@ const Tasks = ({setSelectedPage}: Props) => {
             onViewportEnter={() => setSelectedPage(SelectedPage.Tasks)} //trigger func (go to homepage) when viewport is entered
         >
             {/* Main header */}
-            <div className="z-10  pl-10 ">
+            <div className=" z-10 pl-20 ">
                 {/* Headings */}
                 <motion.div
+                    className="flex mx-auto"
                     {...motionProps}
                 > {/* -mt is positioning the heading higher */}
+                <div>
                     <h4 className="font-bold font-montserrat text-[7vw] md:text-[4vw]">Tasks</h4> {/*text always 5% of vw */}
-
+                </div>
+                <div className="ml-auto my-auto">
+                    <h3>
+                        <span className="text-green font-bold block">Low priority</span>
+                        <span className="text-yellow block">Med priority</span>
+                        <span className="text-red block">High priority</span>
+                    </h3>
+                </div>
                 </motion.div>
                 </div>
 
-            {/* Image on the right */}
+            
             <motion.div 
                 className="z-10 md:mt-5 pl-10"
                 {...motionProps}
@@ -55,10 +67,14 @@ const Tasks = ({setSelectedPage}: Props) => {
                     ))}
                 </div>
                 <div className="flex gap-5 my-5 pb-10">
-                    <button className="p-2 rounded-md bg-green hover:bg-white text-white hover:text-black">Add Task</button>
+                    <button onClick={() => {setShowNewTaskModal(true); console.log(showNewTaskModal); }} className="p-2 rounded-md bg-green hover:bg-white text-white hover:text-black">Add Task</button>
+                    <div className="flex gap-3">
+                        <NewTaskModal show={showNewTaskModal} setShowNewTaskModal={setShowNewTaskModal}></NewTaskModal>
+                    </div>
+
+                    
                     <button className="p-2 rounded-md bg-red hover:bg-white text-white hover:text-black">Remove Task</button>
                 </div>
-
 
             </motion.div>
 
