@@ -5,7 +5,7 @@ type Props = {
     description?: string;
     priority: number;
     completed: boolean;
-    due_date: string;
+    due_date: Date;
     setCheckedItems: (checkedItems: any) => void;
     checkedItems: any;
     index: string;
@@ -17,24 +17,29 @@ const TaskCheckbox = (
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, checked } = e.target;
-        //todo: go thru checked items again and see which ones are unchecked 
-        // checkedItems = Object.keys(checkedItems).filter((item: any) => !item.checked);
 
+        //update previous checkedItems 
+        for (const key in checkedItems) {
+            if (key.includes("false") || key.includes(name)) delete checkedItems[key];
+        }
 
-        setCheckedItems(() => {
-            return { ...checkedItems, [name]: title }
-        });
+        if (checked) {
+            setCheckedItems(() => {
+                return { ...checkedItems, [name + "-" + checked]: title } //key: e.g.0-true
+            });
+        }
     };
 
-
+    const date = new Date(due_date);
     const priorityMap: Record<number, string> = {
         1: "text-green",
         2: "text-yellow",
         3: "text-red",
     };
-
+    const formatDateTime = (field: number) => {
+        return field.toString().length < 2 ? "0"+field : field;
+    }
     const priorityColor = priorityMap[priority] ?? ""; // fallback if priority is unknown
-
     return (
         <div className="">
             <li className="flex gap-4">
@@ -44,7 +49,7 @@ const TaskCheckbox = (
                     
                     <div className="w-full overflow-auto flex">
                         <p className={`font-bold ${priorityColor}`}>{title}</p>
-                        <p className="ml-auto">{due_date}</p>
+                       <p className="ml-auto"> {date.getFullYear()}-{formatDateTime(date.getMonth()+1)}-{formatDateTime(date.getDate())}</p>
                     </div>
                     <div className="">
                         <p>{description}</p>

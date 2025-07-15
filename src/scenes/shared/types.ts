@@ -19,5 +19,5 @@ export interface Task {
   description?: string;
   priority_id: number;
   completed: boolean;
-  due_date: string;
+  due_date: Date;
 }

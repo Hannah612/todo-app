@@ -15,12 +15,10 @@ const Tasks = ({setSelectedPage}: Props) => {
    const [showNewTaskModal, setShowNewTaskModal] = useState<boolean>(false);
    const [showRemoveTaskModal, setShowRemoveTaskModal] = useState<boolean>(false);
    const [tasks, setTasks] = useState<Task[]>([]); 
-   const [checkedItems, setCheckedItems] = useState<{ [key: number]: string }>({});
+   const [checkedItems, setCheckedItems] = useState<{ [key: number]: string}>({});
 
 
 
-
-    console.log(checkedItems);
 
    useEffect(() => {  //does this have to be in a
     fetch("http://localhost:8080/tasks") 
@@ -40,7 +38,7 @@ const Tasks = ({setSelectedPage}: Props) => {
     //     }
     //     return tasks;
     // }
-
+    
   return <section
         id="tasks"
         className="gap-16 bg-gray-20 md:h-auto md:pb-0" 

@@ -19,18 +19,29 @@ const RemoveTaskModal = ({show, setShowRemoveTaskModal, tasksToRemove}: Props) =
     const onSubmit = async (e: any) => {
             e.preventDefault(); 
         try {
-            await fetch("http://localhost:8080/tasks/", {
+            formatTaskToRemoveBeforeSending();
+            console.log("tasksToRemove")
+            console.log(new Array(tasksToRemove))
+            await fetch("http://localhost:8080/tasks/delete-multiple-tasks", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(""),
+                body: JSON.stringify(new Array(tasksToRemove)),  //change the format of this to be [{id: 0, description:""}, {}] 
             });
             setShowRemoveTaskModal(false);
         } catch (error) {
             setValidationMessage("An error occurred. Please try again later.");
         }
-  };
+    };
+
+    const formatTaskToRemoveBeforeSending = async() => {
+        for (let [key, value] of Object.entries(tasksToRemove)) {
+            const newKey = key.substring(0, key.length - 5);
+            tasksToRemove[newKey] = value; 
+            delete tasksToRemove[key]; 
+        }
+    };
 
     return (
     
@@ -56,7 +67,7 @@ const RemoveTaskModal = ({show, setShowRemoveTaskModal, tasksToRemove}: Props) =
 
                     <div className='ml-5 flex gap-8'>
                         <div className="flex">
-                            <button className="p-2 rounded-md bg-green hover:bg-white text-white hover:text-black">Confirm</button>
+                            <button onClick={onSubmit} className="p-2 rounded-md bg-green hover:bg-white text-white hover:text-black">Confirm</button>
                         </div>
 
                         
