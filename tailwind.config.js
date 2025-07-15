@@ -20,6 +20,7 @@ export default {
         "green": "#238823",
         "red": "#D2222D",
         "yellow": "#E1AD01",
+        "beige": "#FFFFFFBF",
       },
       backgroundImage: (theme) => ({
         "gradient-yellowred": "linear-gradient(90deg, #638959 0%, #FFC837 100%)",

@@ -2,8 +2,9 @@ import { motion } from "framer-motion";
 import { SelectedPage, type Task } from "../shared/types";
 import { motionProps } from "../shared/types"
 import TaskCheckbox from "../shared/TaskCheckbox";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import NewTaskModal from "../modals/NewTaskModal";
+import RemoveTaskModal from "../modals/RemoveTaskModal";
 
 type Props = {
     setSelectedPage: (value: SelectedPage) => void;
@@ -12,15 +13,33 @@ type Props = {
 const Tasks = ({setSelectedPage}: Props) => {
 
    const [showNewTaskModal, setShowNewTaskModal] = useState<boolean>(false);
-   const [tasks, setTasks] = useState<Task[]>([]);
+   const [showRemoveTaskModal, setShowRemoveTaskModal] = useState<boolean>(false);
+   const [tasks, setTasks] = useState<Task[]>([]); 
+   const [checkedItems, setCheckedItems] = useState<{ [key: number]: string }>({});
 
-   useEffect(() => {
-    fetch("http://localhost:8080/tasks") // Replace with your Spring API URL
+
+
+
+    console.log(checkedItems);
+
+   useEffect(() => {  //does this have to be in a
+    fetch("http://localhost:8080/tasks") 
       .then((response) => response.json())
       .then((data) => setTasks(data))
       .catch((error) => console.error("Error fetching data:", error));
-  }, []);
+  }, [showNewTaskModal, showRemoveTaskModal]);
 
+  /*
+    takes all the name/ids from checkedItems, and returns the task from the tasks object 
+  */
+    // const checkedItemsContents = (): Array<Task> => {
+    //     if (Object.keys(checkedItems).length > 0) {
+    //        console.log('Object.keys(checkedItems)');
+    //        console.log(Object.keys(checkedItems));
+
+    //     }
+    //     return tasks;
+    // }
 
   return <section
         id="tasks"
@@ -55,25 +74,35 @@ const Tasks = ({setSelectedPage}: Props) => {
                 className="z-10 md:mt-5 pl-10"
                 {...motionProps}
             >
-                <div>
+                {/* TODO: 
+                 - option to sort tasks by priority, due date, or completed
+                 - show date in better way on mobile in TaskCheckbox */}
+                <div> 
                     {tasks.map((task, index) => (
                         <TaskCheckbox 
-                            key={`${task.title}-${index}`}
+                            setCheckedItems={setCheckedItems}
+                            key={`${index}`}
                             title={task.title}
+                            index={(index).toString()}
                             description={task.description}
+                            checkedItems={checkedItems}
                             priority={task.priority_id}
                             completed={task.completed}
+                            due_date={task.due_date}
                         ></TaskCheckbox>
                     ))}
                 </div>
                 <div className="flex gap-5 my-5 pb-10">
-                    <button onClick={() => {setShowNewTaskModal(true); console.log(showNewTaskModal); }} className="p-2 rounded-md bg-green hover:bg-white text-white hover:text-black">Add Task</button>
+                    <button onClick={() => {setShowNewTaskModal(true)}} className="p-2 rounded-md bg-green hover:bg-white text-white hover:text-black">Add Task</button>
                     <div className="flex gap-3">
                         <NewTaskModal show={showNewTaskModal} setShowNewTaskModal={setShowNewTaskModal}></NewTaskModal>
                     </div>
 
                     
-                    <button className="p-2 rounded-md bg-red hover:bg-white text-white hover:text-black">Remove Task</button>
+                    <button onClick={() => {setShowRemoveTaskModal(true)}} className="p-2 rounded-md bg-red hover:bg-white text-white hover:text-black">Remove Task</button>
+                    <div className="flex gap-3">
+                        <RemoveTaskModal tasksToRemove={checkedItems} show={showRemoveTaskModal} setShowRemoveTaskModal={setShowRemoveTaskModal}></RemoveTaskModal>
+                    </div>
                 </div>
 
             </motion.div>

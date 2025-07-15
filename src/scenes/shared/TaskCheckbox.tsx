@@ -1,26 +1,31 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, type ChangeEvent } from "react";
 
 type Props = {
     title: string;
     description?: string;
     priority: number;
     completed: boolean;
+    due_date: string;
+    setCheckedItems: (checkedItems: any) => void;
+    checkedItems: any;
+    index: string;
 }
 
 const TaskCheckbox = (
-    {title, description, priority, completed}: Props
+    {title, description, priority, completed, checkedItems, index, due_date, setCheckedItems}: Props
 ) => {
-    const [isChecked, setIsChecked] = useState<boolean>(false);
 
-    //if db already states completed, then check it on app
-    useEffect(() => {
-        setIsChecked(completed);
-    }, [completed]);
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, checked } = e.target;
+        //todo: go thru checked items again and see which ones are unchecked 
+        // checkedItems = Object.keys(checkedItems).filter((item: any) => !item.checked);
 
 
-    const handleChange = () => {
-        setIsChecked(prev => !prev);
+        setCheckedItems(() => {
+            return { ...checkedItems, [name]: title }
+        });
     };
+
 
     const priorityMap: Record<number, string> = {
         1: "text-green",
@@ -33,12 +38,13 @@ const TaskCheckbox = (
     return (
         <div className="">
             <li className="flex gap-4">
-                <input type="checkbox" checked={isChecked} onChange={handleChange} className="flex flex-col flex-start"/>
+                <input type="checkbox" name={index} title={title} onChange={handleChange} className="flex flex-col flex-start"/>
 
-                <div className="md:flex gap-3 w-full hover:bg-gray-50 " onClick={handleChange}>
+                <div className="gap-2 w-full hover:bg-gray-50 ">
                     
-                    <div className="w-60 overflow-auto ">
+                    <div className="w-full overflow-auto flex">
                         <p className={`font-bold ${priorityColor}`}>{title}</p>
+                        <p className="ml-auto">{due_date}</p>
                     </div>
                     <div className="">
                         <p>{description}</p>
