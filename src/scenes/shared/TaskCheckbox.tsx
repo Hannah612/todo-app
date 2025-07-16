@@ -1,3 +1,4 @@
+import { CheckBadgeIcon } from "@heroicons/react/24/outline";
 import React, { useEffect, useState, type ChangeEvent } from "react";
 
 type Props = {
@@ -45,10 +46,21 @@ const TaskCheckbox = (
             <li className="flex gap-4">
                 <input type="checkbox" name={index} title={title} onChange={handleChange} className="flex flex-col flex-start"/>
 
-                <div className="gap-2 w-full hover:bg-gray-50 ">
+                <div className={`gap-2 w-full ${completed ? "hover:bg-green-light" : "hover:bg-gray-50"}`}>
                     
                     <div className="w-full overflow-auto flex">
-                        <p className={`font-bold ${priorityColor}`}>{title}</p>
+                        {/* <p className={`font-bold ${priorityColor}`}>{title}</p> */}
+                        <p className={`font-bold ${priorityColor} flex`}>
+                            {completed ? (
+                                <>
+                                    {title}
+                                    <CheckBadgeIcon className="text-green w-5 ml-2">yes</CheckBadgeIcon>
+                                </>
+                                ) : (
+                                    title
+                                )}
+                        </p>
+
                        <p className="ml-auto"> {date.getFullYear()}-{formatDateTime(date.getMonth()+1)}-{formatDateTime(date.getDate())}</p>
                     </div>
                     <div className="">

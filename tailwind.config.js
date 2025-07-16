@@ -18,6 +18,7 @@ export default {
         "secondary-100": "#06150E",
         "dark-brown": "#402718",
         "green": "#238823",
+        "green-light" : "#e6efe6",
         "red": "#D2222D",
         "yellow": "#E1AD01",
         "beige": "#FFFFFFBF",

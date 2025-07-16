@@ -1,7 +1,10 @@
 import { XMarkIcon } from '@heroicons/react/24/solid';
 import { useState, type ChangeEvent } from 'react';
+import Calendar from 'react-calendar'; //https://www.npmjs.com/package/react-calendar
 import { useForm } from "react-hook-form";
 import Modal from 'react-modal';
+import 'react-calendar/dist/Calendar.css';
+import styled from '@emotion/styled';
 /*
     NewTaskModal: a modal that open when add task is pressed, and shows a form for the new task input
 */
@@ -10,14 +13,30 @@ type Props = {
     setShowNewTaskModal: (showNewTaskModal: boolean) => void;
 }
 
+interface Input {
+    title: string;
+    description: string;
+    completed: string;
+    priority_id: string;
+    due_date: Date;
+}
+type ValuePiece = Date | null;
 
+type Value = ValuePiece | [ValuePiece, ValuePiece];
 const NewTaskModal = ({show, setShowNewTaskModal}: Props) => {
     const inputStyles = `md:flex gap-2 mr-10 ml-5 mb-3 pr-10`
-    const [inputs, setInputs] = useState({});
-    const [validationMessage, setValidationMessage] = useState({});
+    const [inputs, setInputs] = useState<Input>({
+        title:"", 
+        description: "",
+        completed: "", 
+        priority_id: "",
+        due_date: new Date(),
+    });
+    const [validationMessage, setValidationMessage] = useState<string>({});
     const [isCompleted, setIsCompleted] = useState<boolean>(false);
     const [priority, setPriority] = useState<number>(0);
     const titleStyle = `font-bold`;
+    const [dueDate, onChange] = useState<Value>(new Date());
     const {
         register, 
         trigger, //validate form if needed
@@ -27,6 +46,7 @@ const NewTaskModal = ({show, setShowNewTaskModal}: Props) => {
     const onSubmit = async (e: any) => {
             e.preventDefault(); 
         try {
+            handleDueDateChange();
             const response = await fetch("http://localhost:8080/tasks", {
                 method: "POST",
                 headers: {
@@ -37,7 +57,6 @@ const NewTaskModal = ({show, setShowNewTaskModal}: Props) => {
 
             if (response.ok) {
                 setValidationMessage("Form submitted successfully!");
-                setInputs({ name: "", email: "" }); 
                 setShowNewTaskModal(false);
             } else {
                 setValidationMessage("Failed to submit the form. Please try again.");
@@ -48,10 +67,11 @@ const NewTaskModal = ({show, setShowNewTaskModal}: Props) => {
   };
 
     const handleChange = (e: any) => { //add the new inputs to the object to send to backend
-        const name = e.target.name;
-        const value = e.target.type === "checkbox" ? e.target.checked : e.target.value;
-        console.log(name);
-        console.log(value);
+        const name = e.target.name ? e.target.name : "due_date";
+        let value: any = null;
+        if (e.target.type === "checkbox") value = e.target.checked;
+        else value = e.target.value;
+
         setInputs(values => ({...values, [name]: value}))
     }
 
@@ -60,16 +80,21 @@ const NewTaskModal = ({show, setShowNewTaskModal}: Props) => {
         handleChange(e);
     };
 
-    const handlePriorityChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const handlePriorityChange = (e: ChangeEvent<HTMLSelectElement>) => {
         setPriority(Number(e.target.value));
         handleChange(e);
     };
 
+
+    const handleDueDateChange = () => {
+        //onChange changes the date, but need to set the dueDate variable in handleChange somehow (id using key?)
+    };
+
+
     return (
-    
         <Modal
             isOpen={show}
-            className='z-1000 mx-auto mt-[250px] bg-gray-50  p-0 ml-7 mr-7 bottom-0 rounded-md pb-3 max-w-96'
+            className='z-1000 mx-auto mt-[100px]  bg-gray-50  p-0 ml-7 mr-7 bottom-0 rounded-md pb-3 max-w-96 max-h-[500px] overflow-auto'
         >
             <div>
                 <div className='bg-primary-100 w-full rounded-t-md'>
@@ -130,9 +155,9 @@ const NewTaskModal = ({show, setShowNewTaskModal}: Props) => {
                             <label className={titleStyle}>Priority</label>
                         </div>
                         <select id="dropdown" value={inputs.priority_id || ""}  name="priority_id" onChange={handlePriorityChange}>
-                            <option value="3" className='font-red'>Relaxed</option>
-                            <option value="2" className='font-yellow'>Important</option>
-                            <option value="1" className='font-red'>Urgent</option>
+                            <option value="3" className='font-red'>Low</option>
+                            <option value="2" className='font-yellow'>Med</option>
+                            <option value="1" className='font-red'>High</option>
                         </select>
                     </div>
 
@@ -153,13 +178,16 @@ const NewTaskModal = ({show, setShowNewTaskModal}: Props) => {
                         <div className='md:flex md:mr-3'>
                             <label className={titleStyle}>Due Date</label>
                         </div>
-                        <input  //make sure its in the correct format, or provide a calendar 
+                        <CalendarStyling>
+                            <Calendar key="calendar" value={dueDate || ""} onChange={onChange}/>
+                        </CalendarStyling>
+                        {/* <input  //make sure its in the correct format, or provide a calendar 
                             type="text" 
                             placeholder="Due Date"
                             name="due_date"
                             value={inputs.due_date || ""} 
                             onChange={handleChange}
-                        />
+                        /> */}
                     </div>
 
    
@@ -177,7 +205,28 @@ const NewTaskModal = ({show, setShowNewTaskModal}: Props) => {
         </Modal>
 
   )
+  
 }
+
+const CalendarStyling = styled.div`
+  .react-calendar__tile--now {
+    background: #e6efe6;
+  }
+
+  .react-calendar__tile--active {
+    background: #fa9de9;
+    color: white;
+  }
+
+  .react-calendar__tile--hasActive {
+    background: #fa9de9;
+  }
+
+  .react-calendar__tile--active:enabled:focus {
+    background: #fa9de9;
+  }
+`;
+
 
 Modal.setAppElement('#root')
 

@@ -9,7 +9,7 @@ import type { Task } from '../shared/types';
 type Props = {
     show: boolean;
     setShowRemoveTaskModal: (showRemoveTaskModal: boolean) => void;
-    tasksToRemove: { [key: number]: string; };
+    tasksToRemove: { [key: string]: string; };
 }
 
 
@@ -19,28 +19,41 @@ const RemoveTaskModal = ({show, setShowRemoveTaskModal, tasksToRemove}: Props) =
     const onSubmit = async (e: any) => {
             e.preventDefault(); 
         try {
-            formatTaskToRemoveBeforeSending();
-            console.log("tasksToRemove")
-            console.log(new Array(tasksToRemove))
-            await fetch("http://localhost:8080/tasks/delete-multiple-tasks", {
+            const formatted = formatTaskToRemoveBeforeSending();
+            const response = await fetch("http://localhost:8080/tasks/delete-multiple-tasks", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(new Array(tasksToRemove)),  //change the format of this to be [{id: 0, description:""}, {}] 
+                body: JSON.stringify(formatted),  //change the format of this to be [{id: 0, description:""}, {}] 
             });
             setShowRemoveTaskModal(false);
-        } catch (error) {
+            if (response.ok) {
+                //clear all the checkboxes
+            } else {
+            }
+        } 
+
+        catch (error) {
             setValidationMessage("An error occurred. Please try again later.");
         }
     };
 
-    const formatTaskToRemoveBeforeSending = async() => {
-        for (let [key, value] of Object.entries(tasksToRemove)) {
-            const newKey = key.substring(0, key.length - 5);
-            tasksToRemove[newKey] = value; 
-            delete tasksToRemove[key]; 
+    const formatTaskToRemoveBeforeSending = () => {
+        let newKey = "";
+        let arrayOfTasks = [];
+        let tasks = Object.entries(tasksToRemove);
+        for (let [key, value] of tasks) {
+            let tempObj: Record<string, string> = {};
+
+            newKey = key.substring(0, key.length - 5);
+            tempObj["id"] = newKey;
+            tempObj["title"] = value;
+
+            arrayOfTasks.push(tempObj);
         }
+
+        return arrayOfTasks;
     };
 
     return (
@@ -58,13 +71,12 @@ const RemoveTaskModal = ({show, setShowRemoveTaskModal, tasksToRemove}: Props) =
                 </div>
 
                 <div className="gap-5 my-5 pb-5">
-                    <p className='ml-5 h-28'>Are you sure you want to remove these tasks?</p>
-                    {/* show array of tasks to remove with type Tasks */}
-                    <div>
-
-
-                    </div>
-
+                    <p className='ml-5'>Are you sure you want to remove these tasks?</p>
+                        <ul className="list-inside list-disc">
+                            {Object.values(tasksToRemove).map((task:string, index:number) => (
+                                    <li key={index} className='ml-5 italic'>{task}</li>
+                            ))}
+                        </ul>
                     <div className='ml-5 flex gap-8'>
                         <div className="flex">
                             <button onClick={onSubmit} className="p-2 rounded-md bg-green hover:bg-white text-white hover:text-black">Confirm</button>

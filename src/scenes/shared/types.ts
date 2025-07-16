@@ -3,6 +3,13 @@ export enum SelectedPage {
   Tasks = "tasks",
 }
 
+export enum FilterTypes {
+  Date = "date",
+  Urgency = "urgency",
+  Completed = "completed",
+  None = "none",
+}
+
 export const motionProps = {
   initial: "hidden",
   whileInView: "visible",

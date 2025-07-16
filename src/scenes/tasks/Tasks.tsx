@@ -1,10 +1,12 @@
 import { motion } from "framer-motion";
-import { SelectedPage, type Task } from "../shared/types";
+import { FilterTypes, SelectedPage, type Task } from "../shared/types";
 import { motionProps } from "../shared/types"
 import TaskCheckbox from "../shared/TaskCheckbox";
 import { useEffect, useRef, useState } from "react";
 import NewTaskModal from "../modals/NewTaskModal";
 import RemoveTaskModal from "../modals/RemoveTaskModal";
+import FilterDropdown from "../shared/FilterDropdown";
+import { Dropdown, DropdownButton } from "react-bootstrap";
 
 type Props = {
     setSelectedPage: (value: SelectedPage) => void;
@@ -15,8 +17,8 @@ const Tasks = ({setSelectedPage}: Props) => {
    const [showNewTaskModal, setShowNewTaskModal] = useState<boolean>(false);
    const [showRemoveTaskModal, setShowRemoveTaskModal] = useState<boolean>(false);
    const [tasks, setTasks] = useState<Task[]>([]); 
-   const [checkedItems, setCheckedItems] = useState<{ [key: number]: string}>({});
-
+   const [checkedItems, setCheckedItems] = useState<{ [key: string]: string}>({});
+   const [filterBy, setFilterBy] = useState<FilterTypes>(FilterTypes.None);
 
 
 
@@ -28,17 +30,13 @@ const Tasks = ({setSelectedPage}: Props) => {
   }, [showNewTaskModal, showRemoveTaskModal]);
 
   /*
-    takes all the name/ids from checkedItems, and returns the task from the tasks object 
+    Tasks can be filtered by completed, urgency, or date
+    Future: drag tasks around for custom order
   */
-    // const checkedItemsContents = (): Array<Task> => {
-    //     if (Object.keys(checkedItems).length > 0) {
-    //        console.log('Object.keys(checkedItems)');
-    //        console.log(Object.keys(checkedItems));
+  const arrangeAndFilterTasks = (filterBy: FilterTypes) => {
+    //tasks holds the data 
+  }
 
-    //     }
-    //     return tasks;
-    // }
-    
   return <section
         id="tasks"
         className="gap-16 bg-gray-20 md:h-auto md:pb-0" 
@@ -58,11 +56,14 @@ const Tasks = ({setSelectedPage}: Props) => {
                     <h4 className="font-bold font-montserrat text-[7vw] md:text-[4vw]">Tasks</h4> {/*text always 5% of vw */}
                 </div>
                 <div className="ml-auto my-auto">
-                    <h3>
-                        <span className="text-green font-bold block">Low priority</span>
-                        <span className="text-yellow block">Med priority</span>
-                        <span className="text-red block">High priority</span>
+                    <h3 className="flex">
+                        <span className="font-bold block underline">Priority</span>
+                        <span className="text-green font-bold block pl-5">Low</span>
+                        <span className="text-yellow block pl-5">Med</span>
+                        <span className="text-red block pl-5">High</span>
                     </h3>
+                    <FilterDropdown
+                        setFilterBy={setFilterBy}></FilterDropdown>
                 </div>
                 </motion.div>
                 </div>
