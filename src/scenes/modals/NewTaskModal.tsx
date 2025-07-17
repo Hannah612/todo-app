@@ -1,5 +1,5 @@
 import { XMarkIcon } from '@heroicons/react/24/solid';
-import { useState, type ChangeEvent } from 'react';
+import { useEffect, useState, type ChangeEvent } from 'react';
 import Calendar from 'react-calendar'; //https://www.npmjs.com/package/react-calendar
 import { useForm } from "react-hook-form";
 import Modal from 'react-modal';
@@ -46,7 +46,6 @@ const NewTaskModal = ({show, setShowNewTaskModal}: Props) => {
     const onSubmit = async (e: any) => {
             e.preventDefault(); 
         try {
-            handleDueDateChange();
             const response = await fetch("http://localhost:8080/tasks", {
                 method: "POST",
                 headers: {
@@ -57,6 +56,7 @@ const NewTaskModal = ({show, setShowNewTaskModal}: Props) => {
 
             if (response.ok) {
                 setValidationMessage("Form submitted successfully!");
+                clearAllFields();
                 setShowNewTaskModal(false);
             } else {
                 setValidationMessage("Failed to submit the form. Please try again.");
@@ -66,12 +66,30 @@ const NewTaskModal = ({show, setShowNewTaskModal}: Props) => {
         }
   };
 
-    const handleChange = (e: any) => { //add the new inputs to the object to send to backend
-        const name = e.target.name ? e.target.name : "due_date";
-        let value: any = null;
-        if (e.target.type === "checkbox") value = e.target.checked;
-        else value = e.target.value;
+    const clearAllFields = () => {
+        setInputs({
+            title:"", 
+            description: "",
+            completed: "", 
+            priority_id: "",
+            due_date: new Date()
+        })
+    }
 
+    const handleChange = (e: any) => { //add the new inputs to the object to send to backend
+        let value = "";
+        let name = "";
+        if (e.hasOwnProperty("target")) {
+            name = e.target.name;
+            if (e.target.type === "checkbox") {
+                value = e.target.checked;
+            } else value = e.target.value;
+        } else {
+            name = e.detail.name;
+            value = e.detail.value;
+        }
+
+        console.log(name, value);
         setInputs(values => ({...values, [name]: value}))
     }
 
@@ -86,9 +104,16 @@ const NewTaskModal = ({show, setShowNewTaskModal}: Props) => {
     };
 
 
-    const handleDueDateChange = () => {
-        //onChange changes the date, but need to set the dueDate variable in handleChange somehow (id using key?)
-    };
+    useEffect(() => {
+        console.log("Changing date:", dueDate);
+        const dueDateEvent = new CustomEvent("due_date", {
+            detail: {
+                name: "due_date",
+                value: dueDate,
+            },
+        });
+        handleChange(dueDateEvent);
+    }, [dueDate])
 
 
     return (
@@ -97,16 +122,14 @@ const NewTaskModal = ({show, setShowNewTaskModal}: Props) => {
             className='z-1000 mx-auto mt-[100px]  bg-gray-50  p-0 ml-7 mr-7 bottom-0 rounded-md pb-3 max-w-96 max-h-[500px] overflow-auto'
         >
             <div>
-                <div className='bg-primary-100 w-full rounded-t-md'>
-                    <XMarkIcon className='basis-1/5 ml-auto w-5' onClick={() => setShowNewTaskModal(false)}/>
+                <div className='bg-primary-100 w-full rounded-t-md sticky top-0'>
+                    <XMarkIcon className='basis-1/5 ml-auto w-5' onClick={() => { clearAllFields(); setShowNewTaskModal(false); }}/>
                     <div className='flex'>
                         <p className='mx-auto font-bold'>Add New Task</p>
                     </div>
                 </div>
 
-                {/** Add New Task form*/}
                 <form
-                    // target="_blank" //go to another page on submit
                     onSubmit={onSubmit}
                 >   
                     <div className={inputStyles}>
@@ -161,19 +184,6 @@ const NewTaskModal = ({show, setShowNewTaskModal}: Props) => {
                         </select>
                     </div>
 
-                    {/* <InputLabel id="priority" className={titleStyle}>Priority</InputLabel>
-                    <Select
-                        labelId="priority"
-                        id="priority"
-                        value={priority}
-                        label="Priority"
-                        onChange={handlePriorityChange}
-                    >
-                        <MenuItem className='font-red' value={3}>Relaxed</MenuItem>
-                        <MenuItem value={2}>Important</MenuItem>
-                        <MenuItem value={1}>Urgent</MenuItem>
-                    </Select> */}
-
                      <div className={inputStyles}>
                         <div className='md:flex md:mr-3'>
                             <label className={titleStyle}>Due Date</label>
@@ -181,13 +191,6 @@ const NewTaskModal = ({show, setShowNewTaskModal}: Props) => {
                         <CalendarStyling>
                             <Calendar key="calendar" value={dueDate || ""} onChange={onChange}/>
                         </CalendarStyling>
-                        {/* <input  //make sure its in the correct format, or provide a calendar 
-                            type="text" 
-                            placeholder="Due Date"
-                            name="due_date"
-                            value={inputs.due_date || ""} 
-                            onChange={handleChange}
-                        /> */}
                     </div>
 
    

@@ -51,9 +51,6 @@ function Home({ setSelectedPage }: Props) {
                 />
             </motion.div>
         </motion.div>
-
-        <div className="h-[150px] w-full bg-dark-brown py-10"></div> {/*seperation line*/}
-
     </section>
 }
 

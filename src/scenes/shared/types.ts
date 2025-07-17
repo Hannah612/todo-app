@@ -3,10 +3,16 @@ export enum SelectedPage {
   Tasks = "tasks",
 }
 
-export enum FilterTypes {
+export enum SortType {
   Date = "date",
-  Urgency = "urgency",
+  Priority = "priority_id",
   Completed = "completed",
+  None = "none",
+}
+
+export enum OrderType {
+  ASC = "asc",
+  DESC = "desc",
   None = "none",
 }
 
@@ -27,4 +33,5 @@ export interface Task {
   priority_id: number;
   completed: boolean;
   due_date: Date;
+  id: number;
 }

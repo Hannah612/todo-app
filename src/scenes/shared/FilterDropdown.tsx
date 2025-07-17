@@ -1,32 +1,51 @@
 import type { ChangeEvent } from "react";
-import type { FilterTypes } from "./types";
+import type { OrderType, SortType } from "./types";
 
 /**
  * Filter Dropdown: provide the categories to filter by, pass the result to Tasks
  */
 type Props = {
-    setFilterBy: (filterBy: FilterTypes) => void;
+    setSortBy: (sortBy: SortType) => void;
+    setOrder: (order: OrderType) => void;
 }
 
 const FilterDropdown = (
-    {setFilterBy}: Props
+    {setSortBy, setOrder}: Props
 ) => {
-    const inputStyles = `md:flex gap-2 mb-3 pr-10`;
 
-    const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
-        setFilterBy(event.target.value as FilterTypes);
+    const handleDropdownChange = (event: ChangeEvent<HTMLSelectElement>) => {
+        setSortBy(event.target.value as SortType);
     };
 
+    const handleOrderChange = (event: ChangeEvent<HTMLSelectElement>) => {
+        setOrder(event.target.value as OrderType);
+    };
+
+
     return (
-        <div className={inputStyles}>
-            <div className='md:flex md:mr-3'>
-                <label className="font-bold underline">Filter By</label>
+        <div className='md:flex gap-2 mb-3ml-auto pb-5'>
+            <div className="flex pb-2">
+                <div className='md:flex md:mr-3'>
+                    <label className="font-bold underline">Sort By</label>
+                </div>
+                <select className="ml-auto" id="dropdown" onChange={handleDropdownChange} name="filter">
+                    <option value="priority_id">Priority</option>
+                    <option value="due_date">Due Date</option>
+                    <option value="completed">Completed</option>
+                </select>
             </div>
-            <select id="dropdown" onChange={handleChange} name="filter">
-                <option value="3" className='font-red'>Relaxed</option>
-                <option value="2" className='font-yellow'>Important</option>
-                <option value="1" className='font-red'>Urgent</option>
-            </select>
+
+            <div className="flex">
+                <div className='md:flex md:mr-3'>
+                    <label className="font-bold underline">Order By</label>
+                </div>
+                <select className="ml-auto" id="dropdown" onChange={handleOrderChange} name="filter">
+                    <option value="asc">ASC</option>
+                    <option value="desc">DESC</option>
+                </select>
+            </div>
+
+
         </div>
     );
 }
