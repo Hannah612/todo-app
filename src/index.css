@@ -11,5 +11,5 @@ body,
     height: 100%;
     width: 100%;
     font-family: "DM Sans", sans-serif;
-    @apply text-gray-500; /*default text color for entire page is gray-500 from tailwind config file*/
+    @apply text-white bg-black-bg;
 }

@@ -28,7 +28,7 @@ const FilterDropdown = (
                 <div className='md:flex md:mr-3'>
                     <label className="font-bold underline">Sort By</label>
                 </div>
-                <select className="ml-auto" id="dropdown" onChange={handleDropdownChange} name="filter">
+                <select className="ml-auto rounded-md text-black" id="dropdown" onChange={handleDropdownChange} name="filter">
                     <option value="priority_id">Priority</option>
                     <option value="due_date">Due Date</option>
                     <option value="completed">Completed</option>
@@ -39,7 +39,7 @@ const FilterDropdown = (
                 <div className='md:flex md:mr-3'>
                     <label className="font-bold underline">Order By</label>
                 </div>
-                <select className="ml-auto" id="dropdown" onChange={handleOrderChange} name="filter">
+                <select className="ml-auto rounded-md text-black" id="dropdown" onChange={handleOrderChange} name="filter">
                     <option value="asc">ASC</option>
                     <option value="desc">DESC</option>
                 </select>

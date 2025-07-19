@@ -23,7 +23,7 @@ function App() {
     window.addEventListener("scroll", handleScroll); //window type objects should have event listener 
     return () => window.removeEventListener("scroll", handleScroll); //remove when leave the page 
   })
-  return <div className="app bg-gray-20">
+  return <div className="app bg-scroll">
     <Navbar 
       isTopOfPage={isTopOfPage}
       selectedPage={selectedPage} 

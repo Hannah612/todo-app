@@ -1,5 +1,5 @@
 import { XMarkIcon } from '@heroicons/react/24/solid';
-import { useState } from 'react';
+import { useState, type ChangeEvent } from 'react';
 import Modal from 'react-modal';
 /*
     RemoveTaskModal: remove a task from the list 
@@ -15,8 +15,8 @@ type Props = {
 const RemoveTaskModal = ({show, setShowRemoveTaskModal, tasksToRemove, setTasksToRemove}: Props) => {
     const [validationMessage, setValidationMessage] = useState({});
 
-    const onSubmit = async (e: any) => {
-            e.preventDefault(); 
+    const onSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.preventDefault(); 
         try {
             const formatted = formatTaskToRemoveBeforeSending();
             const response = await fetch("http://localhost:8080/tasks/delete-multiple-tasks", {
@@ -26,11 +26,11 @@ const RemoveTaskModal = ({show, setShowRemoveTaskModal, tasksToRemove, setTasksT
                 },
                 body: JSON.stringify(formatted),  //change the format of this to be [{id: 0, description:""}, {}] 
             });
-            setShowRemoveTaskModal(false);
             if (response.ok) {
-                //clear all the checkboxes
+                setShowRemoveTaskModal(false);
                 setTasksToRemove({});
             } else {
+                setValidationMessage("Tasks could not be deleted. Please try again later.");
             }
         } 
 
@@ -62,10 +62,10 @@ const RemoveTaskModal = ({show, setShowRemoveTaskModal, tasksToRemove, setTasksT
     
         <Modal
             isOpen={show}
-            className='z-1000 mx-auto mt-[250px] bg-gray-50  p-0 ml-7 mr-7 bottom-0 rounded-md  max-w-96'
+            className='z-1000 mx-auto bg-[#194054] mt-[200px] rounded-md  max-w-96'
         >
 
-                <div className='bg-primary-100 w-full rounded-t-md'>
+                <div className='bg-[#0E2F3F] w-full rounded-t-md'>
                     <XMarkIcon className='basis-1/5 ml-auto w-5' onClick={() => setShowRemoveTaskModal(false)}/>
                     <div className='flex'>
                         <p className='mx-auto font-bold'>Remove Tasks</p>
@@ -81,14 +81,14 @@ const RemoveTaskModal = ({show, setShowRemoveTaskModal, tasksToRemove, setTasksT
                                             <li key={index} className='ml-5 italic'>{task}</li>
                                     ))}
                                 </ul>
-                            <div className='ml-5 flex gap-8'>
+                            <div className='ml-5 flex gap-8 pt-5'>
                                 <div className="flex">
                                     <button onClick={onSubmit} className="p-2 rounded-md bg-green hover:bg-white text-white hover:text-black">Confirm</button>
                                 </div>
 
                                 
                                 <div className="flex ">
-                                    <button onClick={() => setShowRemoveTaskModal(false)} className="p-2 rounded-md bg-red hover:bg-white text-white hover:text-black" >Cancel</button>
+                                    <button onClick={() => setShowRemoveTaskModal(false)} className="p-2 rounded-md bg-red hover:bg-white text-white ml-auto hover:text-black" >Cancel</button>
                                 </div>
                             </div>
                         </>

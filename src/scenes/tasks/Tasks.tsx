@@ -19,15 +19,8 @@ const Tasks = ({setSelectedPage}: Props) => {
    const [checkedItems, setCheckedItems] = useState<{ [key: string]: string}>({});
    const [sortBy, setSortBy] = useState<SortType>(SortType.Priority);
    const [order, setOrder] = useState<OrderType>(OrderType.ASC);
-
-
-
-//    useEffect(() => {  //does this have to be in a
-//     fetch("http://localhost:8080/tasks") 
-//       .then((response) => response.json())
-//       .then((data) => setTasks(data))
-//       .catch((error) => console.error("Error fetching data:", error));
-//   }, [showNewTaskModal, showRemoveTaskModal]);
+   const [isFormSubmitted, setIsFormSubmitted] = useState<boolean>(false);
+   const [showEditTaskModal, setShowEditTaskModal] = useState<boolean>(false);
 
   /*
     Tasks can be sorted by completed, urgency, or date
@@ -38,15 +31,14 @@ const Tasks = ({setSelectedPage}: Props) => {
       .then((response) => response.json())
       .then((data) => setTasks(data))
       .catch((error) => console.error("Error fetching data:", error));
-  }, [sortBy, order]);
+  }, [sortBy, order, checkedItems, isFormSubmitted]);
 
   return <section
         id="tasks"
-        className="gap-16 bg-gray-20 md:h-[800px] md:pb-0" 
+        className="md:h-[600px] md:pb-0 " 
     >
-        <div className="h-[150px] w-full bg-dark-brown py-10"></div> {/*seperation line*/}
         <motion.div 
-            className="w-5/6 items-center justify-center mt-10"
+            className="w-full pr-5 items-center justify-center mt-10 size-100 absolute"
             onViewportEnter={() => setSelectedPage(SelectedPage.Tasks)} //trigger func (go to homepage) when viewport is entered
         >
             {/* Main header */}
@@ -59,7 +51,7 @@ const Tasks = ({setSelectedPage}: Props) => {
                 <div>
                     <h4 className="font-bold font-montserrat text-[7vw] md:text-[4vw] ">Tasks</h4> {/*text always 5% of vw */}
                 </div>
-                <div className="md:ml-auto md:my-auto">
+                <div className="">
                     <h3 className="flex">
                         <span className="font-bold block underline">Priority Colors</span>
                         <div className="ml-auto flex pb-2">
@@ -86,7 +78,7 @@ const Tasks = ({setSelectedPage}: Props) => {
                 {/* TODO: 
                  - option to sort tasks by priority, due date, or completed
                  - show date in better way on mobile in TaskCheckbox */}
-                <div className="max-h-[300px] md:max-h-[400px] overflow-auto"> 
+                <div className="max-h-[300px] md:max-h-[400px] rounded-md overflow-auto p-3 bg-transparent"> 
                     {tasks.map((task, _) => (
                         <TaskCheckbox 
                             setCheckedItems={setCheckedItems}
@@ -98,18 +90,21 @@ const Tasks = ({setSelectedPage}: Props) => {
                             priority={task.priority_id}
                             completed={task.completed}
                             due_date={task.due_date}
+                            setShowEditTaskModal={setShowEditTaskModal}
+                            showEditTaskModal={showEditTaskModal}
                         ></TaskCheckbox>
                     ))}
                 </div>
                 <div className="flex gap-5 my-5 pb-10">
                     <button onClick={() => {setShowNewTaskModal(true)}} className="p-2 rounded-md bg-green hover:bg-white text-white hover:text-black">Add Task</button>
-                    <div className="flex gap-3">
-                        <NewTaskModal show={showNewTaskModal} setShowNewTaskModal={setShowNewTaskModal}></NewTaskModal>
+                    
+                    <div>
+                        <NewTaskModal showNewTaskModal={showNewTaskModal} setIsFormSubmitted={setIsFormSubmitted} setShowNewTaskModal={setShowNewTaskModal}></NewTaskModal>
                     </div>
 
                     
                     <button onClick={() => {setShowRemoveTaskModal(true)}} className="p-2 rounded-md bg-red hover:bg-white text-white hover:text-black">Remove Task</button>
-                    <div className="flex gap-3">
+                    <div>
                         <RemoveTaskModal tasksToRemove={checkedItems} setTasksToRemove={setCheckedItems} show={showRemoveTaskModal} setShowRemoveTaskModal={setShowRemoveTaskModal}></RemoveTaskModal>
                     </div>
                 </div>

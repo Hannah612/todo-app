@@ -9,8 +9,9 @@ import styled from '@emotion/styled';
     NewTaskModal: a modal that open when add task is pressed, and shows a form for the new task input
 */
 type Props = {
-    show: boolean;
+    showNewTaskModal: boolean;
     setShowNewTaskModal: (showNewTaskModal: boolean) => void;
+    setIsFormSubmitted: (isFormSubmitted: boolean) => void;
 }
 
 interface Input {
@@ -23,8 +24,8 @@ interface Input {
 type ValuePiece = Date | null;
 
 type Value = ValuePiece | [ValuePiece, ValuePiece];
-const NewTaskModal = ({show, setShowNewTaskModal}: Props) => {
-    const inputStyles = `md:flex gap-2 mr-10 ml-5 mb-3 pr-10`
+const NewTaskModal = ({setIsFormSubmitted, showNewTaskModal, setShowNewTaskModal}: Props) => {
+    const inputStyles = `md:flex gap-2 mr-10 ml-5 mb-3 pr-10 text-black`
     const [inputs, setInputs] = useState<Input>({
         title:"", 
         description: "",
@@ -35,7 +36,7 @@ const NewTaskModal = ({show, setShowNewTaskModal}: Props) => {
     const [validationMessage, setValidationMessage] = useState<string>({});
     const [isCompleted, setIsCompleted] = useState<boolean>(false);
     const [priority, setPriority] = useState<number>(0);
-    const titleStyle = `font-bold`;
+    const titleStyle = `font-bold text-white`;
     const [dueDate, onChange] = useState<Value>(new Date());
     const {
         register, 
@@ -56,7 +57,7 @@ const NewTaskModal = ({show, setShowNewTaskModal}: Props) => {
 
             if (response.ok) {
                 setValidationMessage("Form submitted successfully!");
-                clearAllFields();
+                setIsFormSubmitted(true);
                 setShowNewTaskModal(false);
             } else {
                 setValidationMessage("Failed to submit the form. Please try again.");
@@ -65,16 +66,6 @@ const NewTaskModal = ({show, setShowNewTaskModal}: Props) => {
             setValidationMessage("An error occurred. Please try again later.");
         }
   };
-
-    const clearAllFields = () => {
-        setInputs({
-            title:"", 
-            description: "",
-            completed: "", 
-            priority_id: "",
-            due_date: new Date()
-        })
-    }
 
     const handleChange = (e: any) => { //add the new inputs to the object to send to backend
         let value = "";
@@ -118,12 +109,12 @@ const NewTaskModal = ({show, setShowNewTaskModal}: Props) => {
 
     return (
         <Modal
-            isOpen={show}
-            className='z-1000 mx-auto mt-[100px]  bg-gray-50  p-0 ml-7 mr-7 bottom-0 rounded-md pb-3 max-w-96 max-h-[500px] overflow-auto'
+            isOpen={showNewTaskModal}
+            className='z-1000 mx-auto bg-[#194054] mt-[200px] rounded-md max-w-96 max-h-[500px] overflow-auto'
         >
             <div>
-                <div className='bg-primary-100 w-full rounded-t-md sticky top-0'>
-                    <XMarkIcon className='basis-1/5 ml-auto w-5' onClick={() => { clearAllFields(); setShowNewTaskModal(false); }}/>
+                <div className='bg-[#0E2F3F] w-full rounded-t-md sticky top-0'>
+                    <XMarkIcon className='basis-1/5 ml-auto w-5' onClick={() => setShowNewTaskModal(false)}/>
                     <div className='flex'>
                         <p className='mx-auto font-bold'>Add New Task</p>
                     </div>
@@ -174,7 +165,7 @@ const NewTaskModal = ({show, setShowNewTaskModal}: Props) => {
                     </div>
 
                     <div className={inputStyles}>
-                        <div className='md:flex md:mr-3'>
+                        <div className='md:flex md:mr-3 '>
                             <label className={titleStyle}>Priority</label>
                         </div>
                         <select id="dropdown" value={inputs.priority_id || ""}  name="priority_id" onChange={handlePriorityChange}>
@@ -195,13 +186,18 @@ const NewTaskModal = ({show, setShowNewTaskModal}: Props) => {
 
    
     
-                    
-                    <button
-                        type="submit"
-                        className="mt-5 rounded-lg ml-4 bg-primary-100 px-3 py-2 transition duration-500 hover:text-white"
-                    >
-                        Submit
-                    </button>
+                    <div className="flex mt-5 mb-5">
+                        <button
+                            type="submit"
+                            className="rounded-lg ml-4 bg-primary-100 px-3 py-2 transition duration-500 hover:text-white"
+                        >
+                            Submit
+                        </button>
+                        <div className="ml-auto pr-5">
+                            <button onClick={() => setShowNewTaskModal(false)} className="p-2 rounded-md bg-red hover:bg-white text-white hover:text-black" >Cancel</button>
+                        </div>
+                    </div>
+
                 </form>
 
             </div>
@@ -228,9 +224,15 @@ const CalendarStyling = styled.div`
   .react-calendar__tile--active:enabled:focus {
     background: #fa9de9;
   }
+
+  .react-calendar {
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    color: white;
+  }
 `;
 
 
 Modal.setAppElement('#root')
 
-export default NewTaskModal
+export default NewTaskModal;
