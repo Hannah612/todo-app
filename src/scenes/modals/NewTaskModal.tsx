@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import Modal from 'react-modal';
 import 'react-calendar/dist/Calendar.css';
 import styled from '@emotion/styled';
+import type { Input } from '../shared/types';
 /*
     NewTaskModal: a modal that open when add task is pressed, and shows a form for the new task input
 */
@@ -14,16 +15,10 @@ type Props = {
     setIsFormSubmitted: (isFormSubmitted: boolean) => void;
 }
 
-interface Input {
-    title: string;
-    description: string;
-    completed: string;
-    priority_id: string;
-    due_date: Date;
-}
-type ValuePiece = Date | null;
 
+type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
+
 const NewTaskModal = ({setIsFormSubmitted, showNewTaskModal, setShowNewTaskModal}: Props) => {
     const inputStyles = `md:flex gap-2 mr-10 ml-5 mb-3 pr-10 text-black`
     const [inputs, setInputs] = useState<Input>({
@@ -33,9 +28,9 @@ const NewTaskModal = ({setIsFormSubmitted, showNewTaskModal, setShowNewTaskModal
         priority_id: "",
         due_date: new Date(),
     });
-    const [validationMessage, setValidationMessage] = useState<string>({});
-    const [isCompleted, setIsCompleted] = useState<boolean>(false);
-    const [priority, setPriority] = useState<number>(0);
+    const [, setValidationMessage] = useState<string>();
+    const [, setIsCompleted] = useState<boolean>(false);
+    const [, setPriority] = useState<number>(0);
     const titleStyle = `font-bold text-white`;
     const [dueDate, onChange] = useState<Value>(new Date());
     const {
@@ -96,7 +91,6 @@ const NewTaskModal = ({setIsFormSubmitted, showNewTaskModal, setShowNewTaskModal
 
 
     useEffect(() => {
-        console.log("Changing date:", dueDate);
         const dueDateEvent = new CustomEvent("due_date", {
             detail: {
                 name: "due_date",

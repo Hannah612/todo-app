@@ -16,6 +16,14 @@ export enum OrderType {
   None = "none",
 }
 
+export interface Input {
+    title: string;
+    description: string;
+    completed: string;
+    priority_id: string;
+    due_date: Date;
+}
+
 export const motionProps = {
   initial: "hidden",
   whileInView: "visible",

@@ -15,12 +15,18 @@ const Tasks = ({setSelectedPage}: Props) => {
 
    const [showNewTaskModal, setShowNewTaskModal] = useState<boolean>(false);
    const [showRemoveTaskModal, setShowRemoveTaskModal] = useState<boolean>(false);
-   const [tasks, setTasks] = useState<Task[]>([]); 
+   const [tasks, setTasks] = useState<Task[]>([{
+                                                title: "",
+                                                description: "",
+                                                priority_id: 0,
+                                                completed: false,
+                                                due_date: new Date(),
+                                                id: 0
+                                            }]); 
    const [checkedItems, setCheckedItems] = useState<{ [key: string]: string}>({});
    const [sortBy, setSortBy] = useState<SortType>(SortType.Priority);
    const [order, setOrder] = useState<OrderType>(OrderType.ASC);
    const [isFormSubmitted, setIsFormSubmitted] = useState<boolean>(false);
-   const [showEditTaskModal, setShowEditTaskModal] = useState<boolean>(false);
 
   /*
     Tasks can be sorted by completed, urgency, or date
@@ -83,15 +89,14 @@ const Tasks = ({setSelectedPage}: Props) => {
                         <TaskCheckbox 
                             setCheckedItems={setCheckedItems}
                             key={`${ task.id }`}
-                            title={task.title}
+                            // title={task.title}
                             index={(task.id).toString()}
-                            description={task.description}
+                            // description={task.description}
                             checkedItems={checkedItems}
-                            priority={task.priority_id}
-                            completed={task.completed}
-                            due_date={task.due_date}
-                            setShowEditTaskModal={setShowEditTaskModal}
-                            showEditTaskModal={showEditTaskModal}
+                            // priority={task.priority_id}
+                            // completed={task.completed}
+                            // due_date={task.due_date}
+                            task={task}
                         ></TaskCheckbox>
                     ))}
                 </div>
