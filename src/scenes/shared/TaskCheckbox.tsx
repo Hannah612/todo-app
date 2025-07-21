@@ -1,23 +1,19 @@
 import { CheckBadgeIcon } from "@heroicons/react/24/outline";
 import { PencilIcon } from "@heroicons/react/24/outline";
-import React, { useEffect, useState, type ChangeEvent } from "react";
+import React, { useState } from "react";
 import EditTaskModal from "../modals/EditTaskModal";
 import type { Task } from "./types";
 
 type Props = {
-    // title: string;
-    // description?: string;
-    // priority: number;
-    // completed: boolean;
-    // due_date: Date;
     task: Task;
     setCheckedItems: (checkedItems: any) => void;
     checkedItems: any;
     index: string;
+    setIsFormSubmitted: (isFormSubmitted: boolean) => void;
 }
 
 const TaskCheckbox = (
-    {task, checkedItems, index, setCheckedItems}: Props
+    {task, checkedItems, index, setCheckedItems, setIsFormSubmitted}: Props
 ) => {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,7 +26,7 @@ const TaskCheckbox = (
 
         if (checked) {
             setCheckedItems(() => {
-                return { ...checkedItems, [name + "-" + checked]: task.title } //key: e.g.0-true
+                return { ...checkedItems, [name + "-" + checked]: task.title } 
             });
         }
     };
@@ -75,7 +71,7 @@ const TaskCheckbox = (
                         <p>{task.description}</p>
                             <PencilIcon onClick={() => setShowEditTaskModal(true)} className="w-5 m-3 ml-auto"></PencilIcon>
                         <div>
-                            <EditTaskModal task={task} showEditTaskModal={showEditTaskModal} setShowEditTaskModal={setShowEditTaskModal}></EditTaskModal>
+                            <EditTaskModal task={task} setIsFormSubmitted={setIsFormSubmitted} showEditTaskModal={showEditTaskModal} setShowEditTaskModal={setShowEditTaskModal}></EditTaskModal>
                         </div>
                     </div>
                 </div>

@@ -19,9 +19,10 @@ export enum OrderType {
 export interface Input {
     title: string;
     description: string;
-    completed: string;
-    priority_id: string;
+    completed: boolean;
+    priority_id: number;
     due_date: Date;
+    [key: string]: string | boolean | number | Date;
 }
 
 export const motionProps = {
@@ -41,5 +42,7 @@ export interface Task {
   priority_id: number;
   completed: boolean;
   due_date: Date;
+  category_id: number;
   id: number;
+  [key: string]: string | boolean | number | Date | undefined;
 }

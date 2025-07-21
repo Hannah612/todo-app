@@ -41,11 +41,11 @@ function Home({ setSelectedPage }: Props) {
 
             {/* Image on the right */}
             <motion.div 
-                className="flex justify-center z-10 md:ml-40 md:mt-16 md:justify-items-end"
+                className="flex justify-center md:ml-40 md:mt-16 md:justify-items-end"
                 {...motionProps}
             >
                 <img 
-                    className="justify-center rounded-full mt-10 w-4/5 md:w-2/5 md:basis-[500px] md:mt-0"
+                    className="justify-center rounded-full mt-10 w-4/5 md:w-2/5 md:basis-[500px] md:mt-0 z-0"
                     alt="notepad" 
                     src={Notepad} 
                 />

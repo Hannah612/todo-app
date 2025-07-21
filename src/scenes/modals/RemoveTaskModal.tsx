@@ -1,6 +1,6 @@
 import { XMarkIcon } from '@heroicons/react/24/solid';
-import { useState, type ChangeEvent } from 'react';
 import Modal from 'react-modal';
+import { toast } from 'react-toastify';
 /*
     RemoveTaskModal: remove a task from the list 
 */
@@ -11,10 +11,7 @@ type Props = {
     setTasksToRemove: (tasksToRemove: {}) => void;
 }
 
-
 const RemoveTaskModal = ({show, setShowRemoveTaskModal, tasksToRemove, setTasksToRemove}: Props) => {
-    const [validationMessage, setValidationMessage] = useState({});
-
     const onSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault(); 
         try {
@@ -24,22 +21,20 @@ const RemoveTaskModal = ({show, setShowRemoveTaskModal, tasksToRemove, setTasksT
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(formatted),  //change the format of this to be [{id: 0, description:""}, {}] 
+                body: JSON.stringify(formatted),
             });
             if (response.ok) {
                 setShowRemoveTaskModal(false);
                 setTasksToRemove({});
             } else {
-                setValidationMessage("Tasks could not be deleted. Please try again later.");
+                toast.error("Tasks could not be deleted. Please try again later.");
             }
         } 
 
         catch (error) {
-            setValidationMessage("An error occurred. Please try again later.");
+            toast.error("An error occurred. Please try again later.");
         }
     };
-
-  
 
     const formatTaskToRemoveBeforeSending = () => {
         let newKey = "";

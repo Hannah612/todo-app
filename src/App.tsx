@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { SelectedPage } from "../src/scenes/shared/types";
 import Home from "./scenes/home/Home";
 import Tasks from "./scenes/tasks/Tasks";
+import { ToastContainer } from "react-toastify";
 
 //manages the whole page structure
 
@@ -31,6 +32,8 @@ function App() {
     />
     <Home setSelectedPage={setSelectedPage} />
     <Tasks setSelectedPage={setSelectedPage} />
+    <ToastContainer/>
+
   </div>
 }
 
