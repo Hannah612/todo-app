@@ -20,6 +20,7 @@ export default {
         "yellow": "#E1AD01",
         "transparent": "#00808080",
         "beige": "#FFFFFFBF",
+        "green-btn": "#238823",
       },
       fontFamily: {
         dmsans: ["DM Sans", "sans-serif"],

@@ -3,6 +3,7 @@ import { PencilIcon } from "@heroicons/react/24/outline";
 import React, { useState } from "react";
 import EditTaskModal from "../modals/EditTaskModal";
 import type { Task } from "./types";
+import styled from "@emotion/styled";
 
 type Props = {
     task: Task;
@@ -40,11 +41,11 @@ const TaskCheckbox = (
     };
     
     const formatDateTime = (field: number) => {
-        return field.toString().length < 2 ? "0"+field : field;
+        return field.toString().length < 2 ? "0" + field : field;
     }
 
     const priorityColor = priorityMap[task.priority_id] ?? ""; // fallback if priority is unknown
-
+    const completed = `text-gray-400`;
     return (
         <div>
             <li className={`flex gap-4 rounded-md ${task.completed ? "hover:bg-green-light-bg" : "hover:bg-transparent"}`}>
@@ -56,8 +57,8 @@ const TaskCheckbox = (
                         <p className={`font-bold ${priorityColor} flex`}>
                             {task.completed ? (
                                 <>
-                                    {task.title}
-                                    <CheckBadgeIcon className="text-green w-5 ml-2"></CheckBadgeIcon>
+                                    <p className={completed}>{task.title}</p>
+                                    <CheckBadgeIcon className={`${completed} w-5 ml-2`}></CheckBadgeIcon>
                                 </>
                                 ) : (
                                     task.title
@@ -68,11 +69,20 @@ const TaskCheckbox = (
                     <p className="ml-auto"> {date.getFullYear()}-{formatDateTime(date.getMonth()+1)}-{formatDateTime(date.getDate())}</p>
                     </div>
                     <div className="flex">
-                        <p>{task.description}</p>
-                            <PencilIcon onClick={() => setShowEditTaskModal(true)} className="w-5 m-3 ml-auto"></PencilIcon>
-                        <div>
-                            <EditTaskModal task={task} setIsFormSubmitted={setIsFormSubmitted} showEditTaskModal={showEditTaskModal} setShowEditTaskModal={setShowEditTaskModal}></EditTaskModal>
-                        </div>
+                        {task.completed ? (
+                            <>
+                                <p className={`${completed}`}>{task.description}</p>
+                            </>
+                        ) : (
+                            <>
+                                <p>{task.description}</p>
+                                <PencilIcon onClick={() => setShowEditTaskModal(true)} className="w-5 m-3 ml-auto"></PencilIcon>
+                                <div>
+                                    <EditTaskModal task={task} setIsFormSubmitted={setIsFormSubmitted} showEditTaskModal={showEditTaskModal} setShowEditTaskModal={setShowEditTaskModal}></EditTaskModal>
+                                </div>
+                            </>
+                        )}
+
                     </div>
                 </div>
             </li>

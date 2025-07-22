@@ -1,7 +1,7 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
 import Modal from 'react-modal';
-import type { Input, Task } from "../shared/types";
+import { CalendarStyling, type Input, type Task } from "../shared/types";
 import { useForm } from "react-hook-form";
 import Calendar from "react-calendar";
 import styled from "@emotion/styled";
@@ -27,7 +27,7 @@ const EditTaskModal = ({task, setShowEditTaskModal, showEditTaskModal, setIsForm
         reset,
         getValues,
         setValue,
-        formState: {isDirty, dirtyFields}
+        formState: {dirtyFields}
     } = useForm<Input>({
             defaultValues: {
                 title: task.title, 
@@ -55,12 +55,11 @@ const EditTaskModal = ({task, setShowEditTaskModal, showEditTaskModal, setIsForm
                 toast.success("Form submitted!")
                 setIsFormSubmitted(true);
                 setShowEditTaskModal(false);
-                // reset();
             }
         } catch (error) {
             toast.error("An error occurred. Please try again later.");
         }
-  };
+    };
 
     useEffect(() => {
         const dueDateEvent = new CustomEvent("due_date", {
@@ -72,26 +71,15 @@ const EditTaskModal = ({task, setShowEditTaskModal, showEditTaskModal, setIsForm
         setValue("due_date", dueDateEvent.detail.value as Date)
     }, [dueDate])
 
-    // only activate button if a field has changed 
-    // useEffect(() => {
-    //         const submitBtn = document.getElementById("submitButton");
-    //         const {id, category_id, ...restOfTask}: Task = task;
-    //         console.log(restOfTask);
-    //         console.log(dirtyFields);
-    //         console.log(getValues());
-
-    //         if (submitBtn) {
-    //             if (Object.keys(dirtyFields).length > 0){
-    //         console.log("activating button");
-
-    //                 (submitBtn as HTMLButtonElement).disabled = false;
-    //             }
-    //             else (submitBtn as HTMLButtonElement).disabled = true;
-    //         }
-    // },[Object.keys(dirtyFields).length]);
-console.log('task.priority_id');
-console.log(task.priority_id);
-console.log(getValues().priority_id);
+    useEffect(() => {
+        const submitBtn = document.getElementById("submitButton");
+        if (submitBtn) {
+            if (Object.keys(dirtyFields).length > 0 || dueDate?.toLocaleString() !== (new Date(task.due_date)).toLocaleString()){
+                (submitBtn as HTMLButtonElement).disabled = false;
+            }
+            else (submitBtn as HTMLButtonElement).disabled = true;
+        }
+    },[Object.keys(dirtyFields).length, dueDate]);
 
   return (
     <Modal
@@ -147,7 +135,7 @@ console.log(getValues().priority_id);
                         <div className='md:flex md:mr-3 '>
                             <label className={titleStyle}>Priority</label>
                         </div>
-                        <select {...register("priority_id")}>
+                        <select {...register("priority_id", {valueAsNumber: true})}>
                             <option value={1} className='font-green'>Low</option>
                             <option value={2} className='font-yellow'>Med</option>
                             <option value={3} className='font-red'>High</option>
@@ -166,6 +154,7 @@ console.log(getValues().priority_id);
                         <DisabledButtonStyling
                             onSubmit={onSubmit}
                             id="submitButton"
+                            disabled
                             className="rounded-lg ml-4 bg-primary-100 px-3 py-2 transition duration-500 hover:text-black hover:bg-white "
                         >
                             Submit
@@ -182,31 +171,7 @@ console.log(getValues().priority_id);
 }
 
 
-const CalendarStyling = styled.div`
-  .react-calendar__tile--now {
-    background: #e6efe6;
-    color: black;
-  }
 
-  .react-calendar__tile--active {
-    background: #fa9de9;
-    color: white;
-  }
-
-  .react-calendar__tile--hasActive {
-    background: #fa9de9;
-  }
-
-  .react-calendar__tile--active:enabled:focus {
-    background: #fa9de9;
-  }
-
-  .react-calendar {
-    background-color: rgba(0, 0, 0, 0.5);
-    border-radius: 5px;
-    color: white;
-  }
-`;
 
 const DisabledButtonStyling = styled.button`
   &:disabled {

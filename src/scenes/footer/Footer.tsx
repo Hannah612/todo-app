@@ -1,23 +1,24 @@
 import { motion } from "framer-motion";
-import { SelectedPage } from "../shared/types";
+import { motionProps } from "../shared/types";
 
 type Props = {
-    setSelectedPage: (selectedPage: SelectedPage) => void;
 }
 
-const Footer = ({ setSelectedPage }: Props) => {
+const Footer = ({  }: Props) => {
   return <section
-        id="tasks"
-        className="h-11 md:pb-0" 
+        id="footer"
+        className="h-[80px] pb-0 bg-dark-blue" 
     >
         <motion.div 
-            className="w-full pr-5 items-center justify-center mt-10 size-100 absolute"
-            onViewportEnter={() => setSelectedPage(SelectedPage.Footer)} //trigger func (go to homepage) when viewport is entered
+            {...motionProps}
         >
+            <div className="w-full pt-5 text-sm text-gray-50">
+                <p className="flex justify-end pr-5">Author: Hannah Ng </p>
+                <p className="flex justify-end pr-5">Email: hannahng500@gmail.com </p>
+            </div>
 
         </motion.div>
-    </section>
-  
+  </section>
 }
 
 export default Footer

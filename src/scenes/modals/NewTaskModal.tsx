@@ -3,10 +3,8 @@ import { useEffect, useState} from 'react';
 import Calendar from 'react-calendar'; //https://www.npmjs.com/package/react-calendar
 import { useForm } from "react-hook-form";
 import Modal from 'react-modal';
-import 'react-calendar/dist/Calendar.css';
-import styled from '@emotion/styled';
 import { toast } from 'react-toastify';
-import type { Input } from '../shared/types';
+import { CalendarStyling, type Input } from '../shared/types';
 /*
     NewTaskModal: a modal that open when add task is pressed, and shows a form for the new task input
 */
@@ -60,6 +58,7 @@ const NewTaskModal = ({setIsFormSubmitted, showNewTaskModal, setShowNewTaskModal
             }
         } catch (error) {
             //throw an error
+            toast.error("An error occurred. Please try again later.");
         }
   };
 
@@ -176,32 +175,6 @@ const NewTaskModal = ({setIsFormSubmitted, showNewTaskModal, setShowNewTaskModal
   )
   
 }
-
-const CalendarStyling = styled.div`
-  .react-calendar__tile--now {
-    background: #e6efe6;
-  }
-
-  .react-calendar__tile--active {
-    background: #fa9de9;
-    color: white;
-  }
-
-  .react-calendar__tile--hasActive {
-    background: #fa9de9;
-  }
-
-  .react-calendar__tile--active:enabled:focus {
-    background: #fa9de9;
-  }
-
-  .react-calendar {
-    background-color: rgba(0, 0, 0, 0.5);
-    border-radius: 5px;
-    color: white;
-  }
-`;
-
 
 Modal.setAppElement('#root')
 

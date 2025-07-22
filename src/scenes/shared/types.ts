@@ -1,3 +1,5 @@
+import styled from "@emotion/styled";
+
 export enum SelectedPage {
   Home = "home",
   Tasks = "tasks",
@@ -47,3 +49,29 @@ export interface Task {
   id: number;
   [key: string]: string | boolean | number | Date | undefined;
 }
+
+export const CalendarStyling = styled.div`
+  .react-calendar__tile--now {
+    background: #e6efe6;
+    color: black;
+  }
+
+  .react-calendar__tile--active {
+    background: #fa9de9;
+    color: white;
+  }
+
+  .react-calendar__tile--hasActive {
+    background: #fa9de9;
+  }
+
+  .react-calendar__tile--active:enabled:focus {
+    background: #fa9de9;
+  }
+
+  .react-calendar {
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    color: white;
+  }
+`;

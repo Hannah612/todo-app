@@ -28,13 +28,10 @@ const Tasks = ({setSelectedPage}: Props) => {
    const [sortBy, setSortBy] = useState<SortType>(SortType.Priority);
    const [order, setOrder] = useState<OrderType>(OrderType.ASC);
    const [isFormSubmitted, setIsFormSubmitted] = useState<boolean>(false);
+   const [search, setSearch] = useState<string>("");
 
-
-  /*
-    Tasks can be sorted by completed, urgency, or date
-    Future: drag tasks around for custom order, sort by unselected/selected
-  */
-  useEffect(() => {  //does this have to be in a
+   //for general task filtering 
+  useEffect(() => { 
     fetch("http://localhost:8080/tasks/sort/"+ sortBy + "/" + order) 
       .then((response) => response.json())
       .then((data) => setTasks(data))
@@ -42,25 +39,43 @@ const Tasks = ({setSelectedPage}: Props) => {
       setIsFormSubmitted(false);
   }, [sortBy, order, checkedItems, isFormSubmitted]);
 
+  //for searching
+  useEffect(() => { 
+    fetch("http://localhost:8080/tasks/search?q=" + encodeURIComponent(search)) 
+      .then((response) => response.json())
+      .then((data) => setTasks(data))
+      .catch((error) => console.error("Error fetching data:", error));
+  }, [search]);
+
   return <section
         id="tasks"
         className="md:h-[600px] md:pb-0" 
     >
         <motion.div 
-            className="w-full pr-5 items-center justify-center mt-10 size-100 absolute"
-            onViewportEnter={() => setSelectedPage(SelectedPage.Tasks)} //trigger func (go to homepage) when viewport is entered
+            className="w-full pr-5 items-center justify-center mt-10 size-100"
+            onViewportEnter={() => setSelectedPage(SelectedPage.Tasks)}
         >
-            {/* Main header */}
             <div className=" z-10 pl-10">
-                {/* Headings */}
                 <motion.div
                     className="md:flex"
                     {...motionProps}
                 >
                 <div>
-                    <h4 className="font-bold font-montserrat text-[7vw] md:text-[4vw] ">Tasks</h4> {/*text always 5% of vw */}
+                    <h4 className="font-bold font-montserrat text-[7vw] md:text-[4vw] ">Tasks</h4> 
                 </div>
+
                 <div className="ml-auto">
+                    <div className="flex">
+                        <input
+                            id="searchField"
+                            className="w-full rounded-sm mr-3 text-black"
+                            type="text"
+                            placeholder="Search"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+                    </div>
+   
                     <h3 className="flex">
                         <span className="font-bold block underline">Priority Colors</span>
                         <div className="ml-auto flex pb-2">
@@ -97,7 +112,7 @@ const Tasks = ({setSelectedPage}: Props) => {
                     ))}
                 </div>
                 <div className="flex gap-5 my-5 pb-10">
-                    <button onClick={() => {setShowNewTaskModal(true)}} className="p-2 rounded-md bg-green hover:bg-white text-white hover:text-black">Add Task</button>
+                    <button onClick={() => {setShowNewTaskModal(true)}} className="p-2 rounded-md bg-green-btn hover:bg-white text-white hover:text-black">Add Task</button>
                     <div>
                         <NewTaskModal showNewTaskModal={showNewTaskModal} setIsFormSubmitted={setIsFormSubmitted} setShowNewTaskModal={setShowNewTaskModal}></NewTaskModal>
                     </div>

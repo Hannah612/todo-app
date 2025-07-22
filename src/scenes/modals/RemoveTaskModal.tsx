@@ -26,6 +26,7 @@ const RemoveTaskModal = ({show, setShowRemoveTaskModal, tasksToRemove, setTasksT
             if (response.ok) {
                 setShowRemoveTaskModal(false);
                 setTasksToRemove({});
+                toast.success("Task(s) deleted.")
             } else {
                 toast.error("Tasks could not be deleted. Please try again later.");
             }
