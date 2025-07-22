@@ -5,6 +5,7 @@ import { SelectedPage } from "../src/scenes/shared/types";
 import Home from "./scenes/home/Home";
 import Tasks from "./scenes/tasks/Tasks";
 import { ToastContainer } from "react-toastify";
+import Footer from "./scenes/footer/Footer";
 
 //manages the whole page structure
 
@@ -26,13 +27,13 @@ function App() {
   })
   return <div className="app bg-scroll">
     <Navbar 
-      isTopOfPage={isTopOfPage}
       selectedPage={selectedPage} 
       setSelectedPage={setSelectedPage}
     />
     <Home setSelectedPage={setSelectedPage} />
     <Tasks setSelectedPage={setSelectedPage} />
     <ToastContainer/>
+    <Footer setSelectedPage={setSelectedPage}/>
 
   </div>
 }

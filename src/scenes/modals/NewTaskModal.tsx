@@ -6,6 +6,7 @@ import Modal from 'react-modal';
 import 'react-calendar/dist/Calendar.css';
 import styled from '@emotion/styled';
 import { toast } from 'react-toastify';
+import type { Input } from '../shared/types';
 /*
     NewTaskModal: a modal that open when add task is pressed, and shows a form for the new task input
 */
@@ -29,12 +30,12 @@ const NewTaskModal = ({setIsFormSubmitted, showNewTaskModal, setShowNewTaskModal
         setValue,
         getValues,
         formState: { errors }
-    } = useForm({
+    } = useForm<Input>({
             defaultValues: {
                 title: "", 
                 description: "",
                 completed: false, 
-                priority_id: "",
+                priority_id: 1,
                 due_date: new Date(),
             },
             mode: "onChange", //validate on input change
@@ -76,7 +77,7 @@ const NewTaskModal = ({setIsFormSubmitted, showNewTaskModal, setShowNewTaskModal
     return (
         <Modal
             isOpen={showNewTaskModal}
-            className='z-1000 mx-auto bg-[#194054] mt-[200px] rounded-md max-w-[500px] max-h-[600px] overflow-auto'
+            className='z-1000 mx-auto bg-[#194054] mt-[100px] rounded-md max-w-[500px] max-h-[600px] overflow-auto'
         >
             <div>
                 <div className='bg-[#0E2F3F] w-full rounded-t-md sticky top-0'>
@@ -117,9 +118,10 @@ const NewTaskModal = ({setIsFormSubmitted, showNewTaskModal, setShowNewTaskModal
                         <div className='md:flex md:mr-3'>
                             <label className={titleStyle}>Description</label>
                         </div>
-                        <input 
-                            type="text" 
+                        <textarea
                             placeholder="Description"
+                            rows={5}
+                            cols={30} //make this flex
                             {...register("description")}
                         />
                     </div>
@@ -140,9 +142,9 @@ const NewTaskModal = ({setIsFormSubmitted, showNewTaskModal, setShowNewTaskModal
                             <label className={titleStyle}>Priority</label>
                         </div>
                         <select {...register("priority_id")}>
-                            <option value={3} className='font-red'>Low</option>
+                            <option value={1} className='font-green'>Low</option>
                             <option value={2} className='font-yellow'>Med</option>
-                            <option value={1} className='font-red'>High</option>
+                            <option value={3} className='font-red'>High</option>
                         </select>
                     </div>
 

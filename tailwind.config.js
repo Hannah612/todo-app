@@ -14,7 +14,6 @@ export default {
         "primary-100": "#87A646",
         "primary-500": "#0E5116",
         "secondary-500": "#0F300F",
-        "dark-brown": "#402718",
         "green": "#3fce3f",
         "green-light-bg" : "rgba(230, 239, 230, 0.5)",
         "red": "#D2222D",

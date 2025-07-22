@@ -18,27 +18,20 @@ type Props = {
 type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
 
-//placeholders should be the existing task
 const EditTaskModal = ({task, setShowEditTaskModal, showEditTaskModal, setIsFormSubmitted}: Props) => {
     const inputStyles = `md:flex gap-2 mr-10 ml-5 mb-3 pr-10 text-black`
     const titleStyle = `font-bold text-white`;
-    const [inputs, setInputs] = useState<Input>({
-        title: task.title, 
-        description: task.description || "",
-        completed: task.completed, 
-        priority_id: task.priority_id,
-        due_date: task.due_date,
-    });
     const [dueDate, onChange] = useState<Value>(new Date());
     const {
         register, 
         reset,
-        formState: { errors }
-        
-    } = useForm({
+        getValues,
+        setValue,
+        formState: {isDirty, dirtyFields}
+    } = useForm<Input>({
             defaultValues: {
                 title: task.title, 
-                description: task.description || "",
+                description: task.description ?? "",
                 completed: task.completed, 
                 priority_id: task.priority_id,
                 due_date: task.due_date,
@@ -49,40 +42,25 @@ const EditTaskModal = ({task, setShowEditTaskModal, showEditTaskModal, setIsForm
     const onSubmit = async (e: any) => {
             e.preventDefault(); 
         try {
-            const response = await fetch("http://localhost:8080/tasks", {
-                method: "POST",
+            console.log(getValues());
+            const response = await fetch("http://localhost:8080/tasks/" + task.id, {
+                method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(inputs),
+                body: JSON.stringify(getValues()),
             });
 
             if (response.ok) {
                 toast.success("Form submitted!")
                 setIsFormSubmitted(true);
                 setShowEditTaskModal(false);
-                reset();
+                // reset();
             }
         } catch (error) {
             toast.error("An error occurred. Please try again later.");
         }
   };
-
-    const handleChange = (e: any) => { //add the new inputs to the object to send to backend
-        let value = "";
-        let name = "";
-        if (e.hasOwnProperty("target")) {
-            name = e.target.name;
-            if (e.target.type === "checkbox") {
-                value = e.target.checked;
-            } else value = e.target.value;
-        } else {
-            name = e.detail.name;
-            value = e.detail.value;
-        }
-        console.log(name, value);
-        setInputs(values => ({...values, [name]: value}))
-    }
 
     useEffect(() => {
         const dueDateEvent = new CustomEvent("due_date", {
@@ -91,29 +69,34 @@ const EditTaskModal = ({task, setShowEditTaskModal, showEditTaskModal, setIsForm
                 value: dueDate,
             },
         });
-        handleChange(dueDateEvent);
+        setValue("due_date", dueDateEvent.detail.value as Date)
     }, [dueDate])
 
-    useEffect(() => {
-        const {id, category_id, ...restOfTask}: Task = task;
-        const submitBtn = document.getElementById("submitButton");
-        if (submitBtn) {
-            console.log(restOfTask);
-            console.log(inputs);
-            console.log(Object.keys(restOfTask).some((key: string) => restOfTask[key] !== inputs[key]));
-            if (
-                Object.keys(restOfTask).some((key: string) => restOfTask[key] !== inputs[key])
-            ){
-                (submitBtn as HTMLButtonElement).disabled = false;
-            } else (submitBtn as HTMLButtonElement).disabled = true;
-        }
+    // only activate button if a field has changed 
+    // useEffect(() => {
+    //         const submitBtn = document.getElementById("submitButton");
+    //         const {id, category_id, ...restOfTask}: Task = task;
+    //         console.log(restOfTask);
+    //         console.log(dirtyFields);
+    //         console.log(getValues());
 
-    }, [inputs])
+    //         if (submitBtn) {
+    //             if (Object.keys(dirtyFields).length > 0){
+    //         console.log("activating button");
+
+    //                 (submitBtn as HTMLButtonElement).disabled = false;
+    //             }
+    //             else (submitBtn as HTMLButtonElement).disabled = true;
+    //         }
+    // },[Object.keys(dirtyFields).length]);
+console.log('task.priority_id');
+console.log(task.priority_id);
+console.log(getValues().priority_id);
 
   return (
     <Modal
         isOpen={showEditTaskModal}
-        className='z-1000 mx-auto bg-[#194054] mt-[200px] rounded-md max-w-96 max-h-[500px] overflow-auto'
+        className='z-1000 mx-auto bg-[#194054] mt-[100px] rounded-md max-w-[500px] max-h-[600px] overflow-auto'
     >
         <div>
             <div className='bg-[#0E2F3F] w-full rounded-t-md sticky top-0'>
@@ -123,26 +106,29 @@ const EditTaskModal = ({task, setShowEditTaskModal, showEditTaskModal, setIsForm
                 </div>
             </div>
             
-            <form
+               <form
                     onSubmit={onSubmit}
                 >   
                     <div className={inputStyles}>
                         <div className='md:flex md:mr-3'>
-                            <label className={titleStyle}>*Title: <span> {task.title} </span></label>
+                            <label className={titleStyle}>*Title</label>
                         </div>
+                        <input 
+                            type="text" 
+                            placeholder={task.title}
+                            disabled
+                        />
                     </div>
-         
+
                     <div className={inputStyles}>
                         <div className='md:flex md:mr-3'>
                             <label className={titleStyle}>Description</label>
                         </div>
                         <textarea
-                            placeholder={task.description || ""}
+                            placeholder="Description"
                             rows={5}
                             cols={30} //make this flex
-                            {...register("description", {
-                                onChange: (e) => handleChange(e)
-                            })}
+                            {...register("description")}
                         />
                     </div>
 
@@ -153,9 +139,7 @@ const EditTaskModal = ({task, setShowEditTaskModal, showEditTaskModal, setIsForm
                         <input 
                             className="flex flex-col flex-start"
                             type="checkbox" 
-                            {...register("completed", {
-                                onChange: (e) => handleChange(e)
-                            })}
+                            {...register("completed")}
                         />
                     </div>
 
@@ -163,10 +147,10 @@ const EditTaskModal = ({task, setShowEditTaskModal, showEditTaskModal, setIsForm
                         <div className='md:flex md:mr-3 '>
                             <label className={titleStyle}>Priority</label>
                         </div>
-                        <select {...register("priority_id", { onChange: (e) => handleChange(e) })}>
-                            <option value={3} className='font-red'>Low</option>
+                        <select {...register("priority_id")}>
+                            <option value={1} className='font-green'>Low</option>
                             <option value={2} className='font-yellow'>Med</option>
-                            <option value={1} className='font-red'>High</option>
+                            <option value={3} className='font-red'>High</option>
                         </select>
                     </div>
 
@@ -175,20 +159,19 @@ const EditTaskModal = ({task, setShowEditTaskModal, showEditTaskModal, setIsForm
                             <label className={titleStyle}>Due Date</label>
                         </div>
                         <CalendarStyling>
-                            <Calendar key="calendar" value={dueDate || ""} onChange={onChange}/>
+                            <Calendar key="calendar" defaultValue={task.due_date} onChange={onChange}/>
                         </CalendarStyling>
                     </div>
                     <div className="flex mt-5 mb-5">
                         <DisabledButtonStyling
+                            onSubmit={onSubmit}
                             id="submitButton"
-                            type="submit"
-                            className="rounded-lg ml-4 bg-primary-100 px-3 py-2  hover:text-black hover:bg-white "
-                            disabled={true}
-                       >
+                            className="rounded-lg ml-4 bg-primary-100 px-3 py-2 transition duration-500 hover:text-black hover:bg-white "
+                        >
                             Submit
                         </DisabledButtonStyling>
                         <div className="ml-auto pr-5">
-                            <button onClick={() => setShowEditTaskModal(false)} className="p-2 rounded-md bg-red hover:bg-white text-white hover:text-black" >Cancel</button>
+                            <button onClick={() => { setShowEditTaskModal(false); reset();}} className="p-2 rounded-md bg-red hover:bg-white text-white hover:text-black" >Cancel</button>
                         </div>
                     </div>
 
@@ -202,6 +185,7 @@ const EditTaskModal = ({task, setShowEditTaskModal, showEditTaskModal, setIsForm
 const CalendarStyling = styled.div`
   .react-calendar__tile--now {
     background: #e6efe6;
+    color: black;
   }
 
   .react-calendar__tile--active {

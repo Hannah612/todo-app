@@ -6,12 +6,11 @@ import { CloudIcon } from "@heroicons/react/24/outline";
 
 
 type Props = {
-    isTopOfPage: boolean;
     selectedPage: SelectedPage;
     setSelectedPage: (value: SelectedPage) => void;
 }
 
-const Navbar = ({isTopOfPage, selectedPage, setSelectedPage} : Props) => {
+const Navbar = ({selectedPage, setSelectedPage} : Props) => {
   const flexBetween = "flex items-center justify-between"; //common layout to align items left and right in navbar  
   const [isMenuToggled, setIsMenuToggled] = useState<boolean>(false);
   const navbarBackground = "bg-dark-blue opacity-90 z-10 rounded-b-lg";

@@ -1,6 +1,7 @@
 export enum SelectedPage {
   Home = "home",
   Tasks = "tasks",
+  Footer = "footer",
 }
 
 export enum SortType {

@@ -18,7 +18,7 @@ const Tasks = ({setSelectedPage}: Props) => {
    const [tasks, setTasks] = useState<Task[]>([{
                                                 title: "",
                                                 description: "",
-                                                priority_id: 0,
+                                                priority_id: 1,
                                                 completed: false,
                                                 category_id: 0,
                                                 due_date: new Date(),
@@ -44,7 +44,7 @@ const Tasks = ({setSelectedPage}: Props) => {
 
   return <section
         id="tasks"
-        className="md:h-[600px] md:pb-0 " 
+        className="md:h-[600px] md:pb-0" 
     >
         <motion.div 
             className="w-full pr-5 items-center justify-center mt-10 size-100 absolute"
