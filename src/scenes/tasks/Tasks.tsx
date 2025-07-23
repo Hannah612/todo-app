@@ -6,46 +6,60 @@ import { useEffect, useState } from "react";
 import NewTaskModal from "../modals/NewTaskModal";
 import RemoveTaskModal from "../modals/RemoveTaskModal";
 import FilterDropdown from "../shared/FilterDropdown";
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchTasks } from "./getTasksSlice";
 
 type Props = {
     setSelectedPage: (value: SelectedPage) => void;
 }
 
 const Tasks = ({setSelectedPage}: Props) => {
+    const  { tasks, loading, error } = useSelector((state: any) => state.tasks);
+    const dispatch = useDispatch();
 
    const [showNewTaskModal, setShowNewTaskModal] = useState<boolean>(false);
    const [showRemoveTaskModal, setShowRemoveTaskModal] = useState<boolean>(false);
-   const [tasks, setTasks] = useState<Task[]>([{
-                                                title: "",
-                                                description: "",
-                                                priority_id: 1,
-                                                completed: false,
-                                                category_id: 0,
-                                                due_date: new Date(),
-                                                id: 0
-                                            }]); 
+//    const [tasks, setTasks] = useState<Task[]>([{
+//                                                 title: "",
+//                                                 description: "",
+//                                                 priority_id: 1,
+//                                                 completed: false,
+//                                                 category_id: 0,
+//                                                 due_date: new Date(),
+//                                                 id: 0
+//                                             }]); 
    const [checkedItems, setCheckedItems] = useState<{ [key: string]: string}>({});
    const [sortBy, setSortBy] = useState<SortType>(SortType.Priority);
    const [order, setOrder] = useState<OrderType>(OrderType.ASC);
    const [isFormSubmitted, setIsFormSubmitted] = useState<boolean>(false);
    const [search, setSearch] = useState<string>("");
 
-   //for general task filtering 
-  useEffect(() => { 
-    fetch("http://localhost:8080/tasks/sort/"+ sortBy + "/" + order) 
-      .then((response) => response.json())
-      .then((data) => setTasks(data))
-      .catch((error) => console.error("Error fetching data:", error));
-      setIsFormSubmitted(false);
-  }, [sortBy, order, checkedItems, isFormSubmitted]);
+    // const showTaskListHandler = () => {
+    //     dispatch({ type: FETCH_TASKS_SUCCESS });
+    // };
 
-  //for searching
-  useEffect(() => { 
-    fetch("http://localhost:8080/tasks/search?q=" + encodeURIComponent(search)) 
-      .then((response) => response.json())
-      .then((data) => setTasks(data))
-      .catch((error) => console.error("Error fetching data:", error));
-  }, [search]);
+
+//    //for general task filtering 
+//   useEffect(() => { 
+//     fetch("http://localhost:8080/tasks/sort/"+ sortBy + "/" + order) 
+//       .then((response) => response.json())
+//       .then((data) => setTasks(data))
+//       .catch((error) => console.error("Error fetching data:", error));
+//       setIsFormSubmitted(false);
+//   }, [sortBy, order, checkedItems, isFormSubmitted]);
+
+//   //for searching
+//   useEffect(() => { 
+//     fetch("http://localhost:8080/tasks/search?q=" + encodeURIComponent(search)) 
+//       .then((response) => response.json())
+//       .then((data) => setTasks(data))
+//       .catch((error) => console.error("Error fetching data:", error));
+//   }, [search]);
+
+  useEffect(() => {
+    dispatch(fetchTasks());
+  }, [dispatch]);
+
 
   return <section
         id="tasks"
@@ -100,7 +114,7 @@ const Tasks = ({setSelectedPage}: Props) => {
                 {...motionProps}
             >
                 <div className="max-h-[300px] md:max-h-[400px] rounded-md overflow-auto p-3 bg-transparent"> 
-                    {tasks.map((task, _) => (
+                    {tasks.map((task: any, _) => (
                         <TaskCheckbox 
                             setIsFormSubmitted={setIsFormSubmitted}
                             setCheckedItems={setCheckedItems}
@@ -111,13 +125,12 @@ const Tasks = ({setSelectedPage}: Props) => {
                         ></TaskCheckbox>
                     ))}
                 </div>
+
                 <div className="flex gap-5 my-5 pb-10">
                     <button onClick={() => {setShowNewTaskModal(true)}} className="p-2 rounded-md bg-green-btn hover:bg-white text-white hover:text-black">Add Task</button>
                     <div>
                         <NewTaskModal showNewTaskModal={showNewTaskModal} setIsFormSubmitted={setIsFormSubmitted} setShowNewTaskModal={setShowNewTaskModal}></NewTaskModal>
                     </div>
-
-                    
                     <button onClick={() => {setShowRemoveTaskModal(true)}} className="p-2 rounded-md bg-red hover:bg-white text-white hover:text-black">Remove Task</button>
                     <div>
                         <RemoveTaskModal tasksToRemove={checkedItems} setTasksToRemove={setCheckedItems} show={showRemoveTaskModal} setShowRemoveTaskModal={setShowRemoveTaskModal}></RemoveTaskModal>

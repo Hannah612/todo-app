@@ -54,7 +54,7 @@ const TaskCheckbox = (
                 <div className={`gap-2 w-full `}>
                     
                     <div className="w-full overflow-auto flex">
-                        <p className={`font-bold ${priorityColor} flex`}>
+                        <span className={`font-bold ${priorityColor} flex`}>
                             {task.completed ? (
                                 <>
                                     <p className={completed}>{task.title}</p>
@@ -62,8 +62,8 @@ const TaskCheckbox = (
                                 </>
                                 ) : (
                                     task.title
-                                )}
-                        </p>
+                            )}
+                        </span>
 
 
                     <p className="ml-auto"> {date.getFullYear()}-{formatDateTime(date.getMonth()+1)}-{formatDateTime(date.getDate())}</p>
