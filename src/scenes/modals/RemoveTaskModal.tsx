@@ -1,9 +1,11 @@
 import { XMarkIcon } from '@heroicons/react/24/solid';
 import Modal from 'react-modal';
 import { toast } from 'react-toastify';
-/*
-    RemoveTaskModal: remove a task from the list 
-*/
+import { removeTasks } from '../../slices/removeTaskSlice';
+import type { AppDispatch } from '../../store';
+import { useDispatch } from 'react-redux';
+import { ResponseCodes } from '../shared/ResponseCodes';
+
 type Props = {
     show: boolean;
     setShowRemoveTaskModal: (showRemoveTaskModal: boolean) => void;
@@ -12,29 +14,24 @@ type Props = {
 }
 
 const RemoveTaskModal = ({show, setShowRemoveTaskModal, tasksToRemove, setTasksToRemove}: Props) => {
+    const dispatch = useDispatch<AppDispatch>();
+
     const onSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault(); 
-        try {
             const formatted = formatTaskToRemoveBeforeSending();
-            const response = await fetch("http://localhost:8080/tasks/delete-multiple-tasks", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(formatted),
-            });
-            if (response.ok) {
-                setShowRemoveTaskModal(false);
-                setTasksToRemove({});
-                toast.success("Task(s) deleted.")
-            } else {
-                toast.error("Tasks could not be deleted. Please try again later.");
-            }
-        } 
 
-        catch (error) {
-            toast.error("An error occurred. Please try again later.");
-        }
+              dispatch(removeTasks(formatted))
+                  .unwrap()
+                  .then((res: any) => {
+                      if (res.status == ResponseCodes.OK) {
+                        setShowRemoveTaskModal(false);
+                        setTasksToRemove({});
+                        toast.success("Task(s) deleted.")
+                      }
+              }).catch((err) => {
+                   toast.error(err);
+              })
+
     };
 
     const formatTaskToRemoveBeforeSending = () => {

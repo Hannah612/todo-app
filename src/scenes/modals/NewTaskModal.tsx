@@ -5,6 +5,12 @@ import { useForm } from "react-hook-form";
 import Modal from 'react-modal';
 import { toast } from 'react-toastify';
 import { CalendarStyling, type Input } from '../shared/types';
+import { useDispatch, useSelector } from 'react-redux';
+import { postTask } from '../../slices/postTaskSlice';
+import type { AxiosResponse } from 'axios';
+import type { AsyncThunkAction } from '@reduxjs/toolkit';
+import type { AppDispatch } from '../../store';
+import { ResponseCodes } from '../shared/ResponseCodes';
 /*
     NewTaskModal: a modal that open when add task is pressed, and shows a form for the new task input
 */
@@ -20,6 +26,8 @@ type Value = ValuePiece | [ValuePiece, ValuePiece];
 
 const NewTaskModal = ({setIsFormSubmitted, showNewTaskModal, setShowNewTaskModal}: Props) => {
     const inputStyles = `md:flex gap-2 mr-10 mt-3 ml-5 pr-10 text-black`
+    const dispatch = useDispatch<AppDispatch>();
+
     const titleStyle = `font-bold text-white`;
     const [dueDate, onChange] = useState<Value>(new Date());
     const {
@@ -41,25 +49,18 @@ const NewTaskModal = ({setIsFormSubmitted, showNewTaskModal, setShowNewTaskModal
 
     const onSubmit = async (e: any) => {
             e.preventDefault(); 
-        try {
-            const response = await fetch("http://localhost:8080/tasks", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(getValues()),
-            });
-
-            if (response.ok) {
-                toast.success("Form submitted!")
-                setIsFormSubmitted(true);
-                setShowNewTaskModal(false);
-                reset();
-            }
-        } catch (error) {
-            //throw an error
-            toast.error("An error occurred. Please try again later.");
-        }
+            dispatch(postTask(getValues()))
+                .unwrap()
+                .then((res: any) => {
+                    if (res.status == ResponseCodes.TASK_CREATED) {
+                        toast.success("Form submitted!")
+                        setIsFormSubmitted(true);
+                        setShowNewTaskModal(false);
+                        reset();
+                    }
+            }).catch((err) => {
+                 toast.error(err);
+            })
   };
 
     useEffect(() => {

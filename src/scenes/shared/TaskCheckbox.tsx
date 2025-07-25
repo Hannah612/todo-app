@@ -3,7 +3,6 @@ import { PencilIcon } from "@heroicons/react/24/outline";
 import React, { useState } from "react";
 import EditTaskModal from "../modals/EditTaskModal";
 import type { Task } from "./types";
-import styled from "@emotion/styled";
 
 type Props = {
     task: Task;
@@ -20,7 +19,6 @@ const TaskCheckbox = (
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, checked } = e.target;
 
-        //update previous checkedItems 
         for (const key in checkedItems) {
             if (key.includes("false") || key.includes(name)) delete checkedItems[key];
         }
@@ -44,7 +42,7 @@ const TaskCheckbox = (
         return field.toString().length < 2 ? "0" + field : field;
     }
 
-    const priorityColor = priorityMap[task.priority_id] ?? ""; // fallback if priority is unknown
+    const priorityColor = priorityMap[task.priority_id] ?? ""; 
     const completed = `text-gray-400`;
     return (
         <div>

@@ -6,6 +6,10 @@ import { useForm } from "react-hook-form";
 import Calendar from "react-calendar";
 import styled from "@emotion/styled";
 import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../../store";
+import { ResponseCodes } from "../shared/ResponseCodes";
+import { updateTask } from "../../slices/updateTaskSlice";
 
 type Props = {
     setShowEditTaskModal: (showEditTaskModal: boolean) => void;
@@ -21,6 +25,7 @@ type Value = ValuePiece | [ValuePiece, ValuePiece];
 const EditTaskModal = ({task, setShowEditTaskModal, showEditTaskModal, setIsFormSubmitted}: Props) => {
     const inputStyles = `md:flex gap-2 mr-10 ml-5 mb-3 pr-10 text-black`
     const titleStyle = `font-bold text-white`;
+    const dispatch = useDispatch<AppDispatch>();
     const [dueDate, onChange] = useState<Value>(new Date());
     const {
         register, 
@@ -41,24 +46,18 @@ const EditTaskModal = ({task, setShowEditTaskModal, showEditTaskModal, setIsForm
 
     const onSubmit = async (e: any) => {
             e.preventDefault(); 
-        try {
-            console.log(getValues());
-            const response = await fetch("http://localhost:8080/tasks/" + task.id, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(getValues()),
-            });
 
-            if (response.ok) {
-                toast.success("Form submitted!")
-                setIsFormSubmitted(true);
-                setShowEditTaskModal(false);
-            }
-        } catch (error) {
-            toast.error("An error occurred. Please try again later.");
-        }
+            dispatch(updateTask({id: task.id, body: getValues()}))
+                .unwrap()
+                .then((res: any) => {
+                    if (res.status == ResponseCodes.TASK_CREATED) {
+                        toast.success("Task updated.")
+                        setIsFormSubmitted(true);
+                        setShowEditTaskModal(false);
+                    }
+            }).catch((err) => {
+                    toast.error(err);
+            })
     };
 
     useEffect(() => {
@@ -169,9 +168,6 @@ const EditTaskModal = ({task, setShowEditTaskModal, showEditTaskModal, setIsForm
     </Modal>
   )
 }
-
-
-
 
 const DisabledButtonStyling = styled.button`
   &:disabled {
